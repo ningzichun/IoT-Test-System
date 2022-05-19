@@ -1,0 +1,161 @@
+#:kivy 2.0
+
+<WindowManager>:
+    MainWindow
+
+<ActionBar>
+    pos_hint: {'top':1}
+    background_image: ''
+    background_color: (0.085,0.484,0.781,1)
+    color:1,1,1,0.5
+
+<Label,TextInput>
+    font_name: 'SourceHanSansSC-Medium.otf'
+    color:0,0,0,0.9
+<DeviceLable>:
+    BoxLayout:
+        Label:
+            text: root.id
+        Label:
+            text: root.name
+        Label:
+            text: root.role
+<SelectableLabel>:
+    # Draw a background to indicate selection
+    canvas.before:
+        Color:
+            rgba: (.0, 0.9, .1, .3) if self.selected else (0.9,0.9,0.9,1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+<RV>:
+    viewclass: 'SelectableLabel'
+    SelectableRecycleBoxLayout:
+        default_size: None, dp(56)
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+        multiselect: False
+        touch_multiselect: False
+        on_touch_down: 
+            #print(dir(self))
+<CommandButton>:
+    size: dp(200),dp(80)
+    size_hint:(None, None)
+    color: 1,1,1,1
+
+<MainWindow>
+    name: "mainwindow"
+    BoxLayout:
+        orientation:"vertical"
+        canvas.before:
+            Color:
+                rgba: 0.9492, 0.9492, 0.9492, 1
+            Rectangle:
+                # self here refers to the widget i.e FloatLayout
+                pos: self.pos
+                size: self.size
+        ActionBar:
+            id: bar_main
+            ActionView:
+                use_separator: True
+                ActionPrevious:
+                    title: 'IoT Test System'
+                    with_previous: False
+                ActionButton:
+                    text: '刷新'
+                    color:(1,1,1,1)
+                    on_press:
+                        root.refresh()
+        Label:
+            id: lable_title
+            text_size: root.width, None
+            halign: 'left'
+            valign: 'middle'
+            size: self.texture_size
+            text:"设备列表"
+            color: 0,0,0,1
+            padding:10,10
+            size_hint:(1, None)
+        StackLayout:
+            RV:
+                
+            
+            
+<DeviceWindow>:
+    BoxLayout:
+        orientation:"vertical"
+        canvas.before:
+            Color:
+                rgba: 0.9492, 0.9492, 0.9492, 1
+            Rectangle:
+                # self here refers to the widget i.e FloatLayout
+                pos: self.pos
+                size: self.size
+        ActionBar:
+            id: bar_device
+            ActionView:
+                use_separator: True
+                ActionPrevious:
+                    title: '返回设备列表'
+                    with_previous: True
+                    on_press :
+                        #root.fun()
+                        app.root.current = "mainwindow"
+                        root.manager.transition.direction = "right"
+                ActionOverflow:
+                ActionButton:
+                    text: '刷新'
+                    color:(1,1,1,1)
+                    on_press:
+                        root.refresh()
+        Label:
+            id: lable_title
+            text_size: root.width, None
+            halign: 'left'
+            valign: 'middle'
+            size: self.texture_size
+            text:"None"
+            color: 0,0,0,1
+            padding:10,10
+            size_hint:(1, None)
+        TextInput:
+            multiline:True
+            text:root.log_info
+            size_hint:(1, 1.2)
+        Label:
+            text_size: root.width, None
+            halign: 'left'
+            valign: 'middle'
+            size: self.texture_size
+            text:"设备操作："
+            color: 0,0,0,1
+            padding:10,10
+            size_hint:(1, None)
+        StackLayout:
+            id: commandArea
+            padding: 10,10
+    FloatLayout:
+        Label:
+            id: lable_status
+            text:""
+            font_size: '13.5sp'
+            halign: 'left'
+            valign: 'bottom'
+            padding:10,10
+            background_color: 1, 0, 0, 1
+            pos_hint: {'x': 0, 'y': 0}
+            text_size: self.size
+            #size: self.texture_size
+
+
+<P>:
+    Label:
+        text:"Button was pressed"
+        size_hint:0.6,0.2
+        pos_hint:{"x":0.2,"top":1}
+    Button:
+        text:"Button was pressed"
+        size_hint:0.8,0.2
+        pos_hint:{"x":0.1,"y":0.1}    
