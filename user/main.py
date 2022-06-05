@@ -1,5 +1,3 @@
-import imp
-from tkinter import Label
 
 from kivy.app import App
 from kivy.lang import Builder
@@ -93,22 +91,12 @@ def userConnectHandler(device_id):
     logWindow("收到对"+device_id+"的连接请求")
     conn = checkIDConnection(device_id,logger = logWindow)
     if not conn:
-        # if networkList[device_id][2]['addr']:
-        #     for i in networkList[device_id][2]['addr']:
-        #         logWindow("正在尝试与节点建立稳定连接："+str(i))
-        #         conn = tcpConnectHandler(i)
-        #         if conn:
-        #             logWindow("连接成功："+str(i))
-        #             return True
-        # # 转发
-        # if networkList[device_id][2]['forwarder']:
-        #     selectEstablishConnection
-        #     userEstablishForwardHandler(device_id)
         if userEstablishHandler(device_id,logger = logWindow):
             logWindow("建立连接成功")
         else:
             logWindow("建立连接失败")
-
+    else:
+        getDeviceInfo(device_id)
 class WindowManager(ScreenManager):
     pass
 

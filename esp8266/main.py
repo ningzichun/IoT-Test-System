@@ -169,13 +169,19 @@ def calcHash(data):
 socket_tcp = None
 
 def TCPRecvHandler(conn:socket.socket()):
-    rawdata_len = conn.recv(4)
-    if not rawdata_len:
-        return False
-    rawdata_len = struct.unpack('i',rawdata_len)[0]
-    rawdata = conn.recv(rawdata_len)
-    if not rawdata:
-        return False
+    pass
+    try:
+        rawdata_len = conn.recv(4)
+        if not rawdata_len:
+            return False
+        rawdata_len = struct.unpack('i',rawdata_len)[0]
+        rawdata = conn.recv(rawdata_len)
+        if not rawdata:
+            return False
+    except Exception as e:
+        print("In Receive",repr(e))
+        import machine
+        machine.reset()
     # 解码到dict
     try:
         data = json.loads(rawdata)
@@ -238,11 +244,11 @@ def TCPDataHandler(data):
 
 def establishConnection():
     global socket_tcp
-    certNode = socket.getaddrinfo('iot.mrning.com', 20020)[0][-1] # ('119.91.219.109', 20020)
     socket_tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     socket_tcp.bind(('',DEFAULT_SERVER_PORT))
     socket_tcp.setsockopt(socket.SOL_SOCKET, 20, TCPRecvHandler)    # 设置回调
     try:
+        certNode = socket.getaddrinfo('iot.mrning.com', 20020)[0][-1] # ('119.91.219.109', 20020)
         socket_tcp.connect(certNode)
         print("Connected to ",certNode)
         connectedNodeInfo[1] = certNode
@@ -254,8 +260,17 @@ def establishConnection():
         return True
     except Exception as e:
         print(repr(e))
+        socket_tcp.close()
         return False
+        
 initNode()
 
-establishConnection()
+
+
+while True: # daemon
+    code = establishConnection()
+    if not code:
+        time.sleep(5)
+    else:
+        break
 

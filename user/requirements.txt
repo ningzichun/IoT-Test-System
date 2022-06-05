@@ -1,0 +1,4 @@
+dnspython
+psutil
+kivy
+# pip3 install dnspython psutil kivy -i https://pypi.tuna.tsinghua.edu.cn/simple 

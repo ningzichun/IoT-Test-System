@@ -11,7 +11,7 @@ import threading
 import socket
 import threading
 import time
-import psutil
+# import psutil
 import json
 import pickle
 import ipaddress
@@ -103,79 +103,79 @@ def calcScore(latency): # 根据间隔时间计算连接质量
         return 0
     return 52-(latency*0.02)
 
-def getInterface(): # 获取网卡信息
-    net_if_addrs = psutil.net_if_addrs()
-    interfaces = []
-    for k in net_if_addrs:
-        # a new net_interface
-        netif = {'name': k}
-        for v in net_if_addrs[k]:   #snicaddr(family=<AddressFamily.AF_LINK: -1>, address='AA-BB-', netmask=None, broadcast=None, ptp=None)
-            # check address
-            try:
-                if v[0] == psutil.AF_LINK:  #MAC
-                    netif['mac'] = v[1]
-                elif v[0] == socket.AddressFamily.AF_INET:  #IPv4
-                    v4 = ipaddress.IPv4Address(v[1])
-                    if v4.is_global:
-                        if "ipv4" not in netif:
-                            netif["ipv4"] = []
-                        netif["ipv4"].append({
-                            'ip': v[1],
-                            'type': 'global',
-                        })
-                    elif v4.is_private:
-                        if v4.is_link_local or v4.is_loopback or v4.is_reserved:
-                            continue
-                        if "ipv4" not in netif:
-                            netif["ipv4"] = []
-                        netif["ipv4"].append({
-                            'ip': v[1],
-                            'type': 'private',
-                        })
-                elif v[0] == socket.AddressFamily.AF_INET6: #IPv6
-                    v6 = ipaddress.IPv6Address(v[1])
-                    if v6.is_global:
-                        if "ipv6" not in netif:
-                            netif["ipv6"] = []
-                        netif["ipv6"].append({
-                            'ip': v[1],
-                            'type': 'global',
-                        })
-            except Exception:
-                pass
-        if "ipv4" in netif or "ipv6" in netif:
-            interfaces.append(netif)
-    return interfaces
+# def getInterface(): # 获取网卡信息
+#     net_if_addrs = psutil.net_if_addrs()
+#     interfaces = []
+#     for k in net_if_addrs:
+#         # a new net_interface
+#         netif = {'name': k}
+#         for v in net_if_addrs[k]:   #snicaddr(family=<AddressFamily.AF_LINK: -1>, address='AA-BB-', netmask=None, broadcast=None, ptp=None)
+#             # check address
+#             try:
+#                 if v[0] == psutil.AF_LINK:  #MAC
+#                     netif['mac'] = v[1]
+#                 elif v[0] == socket.AddressFamily.AF_INET:  #IPv4
+#                     v4 = ipaddress.IPv4Address(v[1])
+#                     if v4.is_global:
+#                         if "ipv4" not in netif:
+#                             netif["ipv4"] = []
+#                         netif["ipv4"].append({
+#                             'ip': v[1],
+#                             'type': 'global',
+#                         })
+#                     elif v4.is_private:
+#                         if v4.is_link_local or v4.is_loopback or v4.is_reserved:
+#                             continue
+#                         if "ipv4" not in netif:
+#                             netif["ipv4"] = []
+#                         netif["ipv4"].append({
+#                             'ip': v[1],
+#                             'type': 'private',
+#                         })
+#                 elif v[0] == socket.AddressFamily.AF_INET6: #IPv6
+#                     v6 = ipaddress.IPv6Address(v[1])
+#                     if v6.is_global:
+#                         if "ipv6" not in netif:
+#                             netif["ipv6"] = []
+#                         netif["ipv6"].append({
+#                             'ip': v[1],
+#                             'type': 'global',
+#                         })
+#             except Exception:
+#                 pass
+#         if "ipv4" in netif or "ipv6" in netif:
+#             interfaces.append(netif)
+#     return interfaces
 
-def getIPs():   # 从网卡信息中读取IP
-    interfaces = getInterface()
-    IPs={"global":[],"private":[]}
-    for i in interfaces:
-        if "ipv4" in i:
-            for v4 in i["ipv4"]:
-                if v4["type"] == "global":
-                    IPs["global"].append({
-                        "ip": v4["ip"],
-                        "name": i["name"],
-                    })
-                else:
-                    IPs["private"].append({
-                        "ip": v4["ip"],
-                        "name": i["name"],
-                    })
-        if "ipv6" in i:
-            for v6 in i["ipv6"]:
-                if v6["type"] == "global":
-                    IPs["global"].append({
-                        "ip": v6["ip"],
-                        "name": i["name"],
-                    })
-    return IPs
+# def getIPs():   # 从网卡信息中读取IP
+#     interfaces = getInterface()
+#     IPs={"global":[],"private":[]}
+#     for i in interfaces:
+#         if "ipv4" in i:
+#             for v4 in i["ipv4"]:
+#                 if v4["type"] == "global":
+#                     IPs["global"].append({
+#                         "ip": v4["ip"],
+#                         "name": i["name"],
+#                     })
+#                 else:
+#                     IPs["private"].append({
+#                         "ip": v4["ip"],
+#                         "name": i["name"],
+#                     })
+#         if "ipv6" in i:
+#             for v6 in i["ipv6"]:
+#                 if v6["type"] == "global":
+#                     IPs["global"].append({
+#                         "ip": v6["ip"],
+#                         "name": i["name"],
+#                     })
+#     return IPs
 
-def getGlobalIPs(): # 获取全局IP地址
-    IPs = getIPs()['global']
-    globalIPs = [i['ip'] for i in IPs]
-    return globalIPs
+# def getGlobalIPs(): # 获取全局IP地址
+#     IPs = getIPs()['global']
+#     globalIPs = [i['ip'] for i in IPs]
+#     return globalIPs
 
 def isIP(addr): # 判断是否为IP及版本号
     cnt_dot = 0 # 点
@@ -457,7 +457,9 @@ def updateClientList(target_list):    # 拥有data，更新clientList
 ### 
 
 def getCertNode():   # 从预设列表获取部分服务节点信息
-    my_resolver = dns.resolver.Resolver()
+    my_resolver = dns.resolver.Resolver(configure=False)
+    my_resolver.nameservers = [ '223.5.5.5', '119.29.29.29',
+                    '2400:3200::1', '2001:4860:4860::8844' ]
     for addr in certNodeList:
         if isIP(addr[0]):
             sendUDPDiscover((addr[0],addr[1]))
@@ -980,18 +982,6 @@ def tcpDataHandler(data,addr):  # TCP数据包处理函数
         updateStableConnectionNode(data['from']['id'],data['data']['token'])
         return True
 
-    if data['action'] == 'forward':  # 转发数据包
-        conn = findConnectionByID
-        if not conn:
-            tcpSendHandler({
-                "action": "forwardfail",
-                "from": fillFrom(),
-                "event":data['event'],
-            },addr=addr)
-            return False
-        tcpSendHandler(data=data['data'],conn = conn)
-        return True
-    
     if data['action'] == 'ackcommandlist':  # 获得设备的命令列表
         commandList[data['from']['id']] = data['data']
         logGUIWindow("收到命令列表，该节点支持操作 "+str(list(commandList[data['from']['id']].keys())))
@@ -1001,6 +991,9 @@ def tcpDataHandler(data,addr):  # TCP数据包处理函数
         deviceDataHandler(data,addr)
         return True
 
+    if data['action'] == 'forwardfail':  # 获得设备的命令结果
+        logGUIWindow("通信失败：中转节点无法到达目标终端节点")
+        return True
 
 
 def tcpConnectHandler(addr,timeout=5):  # 新建TCP连接 处理函数
